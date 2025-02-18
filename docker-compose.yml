@@ -1,0 +1,33 @@
+services:
+  # База данных MySQL
+  anime-db:
+    image: mysql:latest
+    container_name: anime_mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: anime_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password123
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql  # том для хранения данных
+      - ./dbinit:/docker-entrypoint-initdb.d
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf  # Подключаем кастомный конфиг
+    command: bash -c "chmod 644 /etc/mysql/conf.d/my.cnf && docker-entrypoint.sh mysqld"
+  # Первое Spring Boot приложение
+  anime-service:
+    image: yuribeton/anime-service:latest
+    container_name: anime_service
+    restart: always
+    ports:
+      - "8080:8080"  # приложение доступно на порту 8080
+    depends_on:
+      - anime-db  # приложение зависит от базы данных
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://anime-db:3306/anime_db  # Исправлено на anime-db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password123
+volumes:
+  mysql_data:
