@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/anime")
 @CrossOrigin(origins = "http://localhost:3000")  // Разрешаем запросы с фронтенда
 
 public class AnimeController {
@@ -15,12 +16,12 @@ public class AnimeController {
         this.animeService = animeService;
     }
 
-    @GetMapping("/home")
+    @GetMapping("/all")
     public List<Anime> home() {
         return animeService.getAllAnimes();
     }
 
-    @GetMapping("/anime/{id}")
+    @GetMapping("/{id}")
     public Anime getAnimeById(@PathVariable int id) {
         return animeService.getAnimeById(id);
     }
